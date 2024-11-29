@@ -74,4 +74,4 @@ Fancybox.bind("[data-fancybox]", {
   
   Fancybox.bind('[data-fancybox="gallery-b"]', {
     // Custom options for the second gallery
-  });git --version;
+  });

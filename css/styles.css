@@ -1,346 +1,41 @@
-/* styles.css */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #fff;
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #fad1d1;
-    color: #fff;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;  /* Centraliza todo o conteúdo */
-    align-items: center;
-    gap: 3rem;  /* Espaço entre logo e menu */
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ff69b4;
-    text-decoration: none;
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-    gap: 2.5rem;  /* Aumentei o espaço entre os itens do menu */
-    transition: transform 0.3s ease;
-}
-
-.nav-menu li {
-    display: flex;
-    align-items: center;
-}
-
-.nav-menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    padding: 0.5rem 1rem;  /* Padding para área de clique maior */
-    border-radius: 4px;  /* Bordas arredondadas */
-    flex-direction: column;
-}
-
-.nav-menu a:hover {
-    color: #ff69b4;
-    background-color: rgba(255, 105, 180, 0.1);  /* Fundo rosa suave no hover */
-}
-
-.burger {
-    display: none;
-    cursor: pointer;
-    flex-direction: column;
-}
-
-.burger div {
-    width: 25px;
-    height: 3px;
-    background-color: #333;
-    margin: 5px;
-    transition: all 0.3s ease;
-}
-
-.burger.active .line1 {
-    transform: rotate(-45deg) translate(-5px, 5px);
-}
-
-.burger.active .line2 {
-    opacity: 0;
-}
-
-.burger.active .line3 {
-    transform: rotate(45deg) translate(-5px, -5px);
-}
-
-/* Responsividade melhorada */
-@media screen and (max-width: 968px) {
-    .nav-menu {
-        gap: 1.5rem;  /* Reduz o espaço entre itens em telas médias */
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .nav-container {
-        justify-content: space-between;  /* Ajusta para layout mobile */
-        padding: 0 1rem;
-    }
-
-    .burger {
-        display: block;
-    }
-
-    .nav-menu {
-        position: fixed;
-        right: -100%;
-        top: 70px;
-        background-color: #F5E6D3;  /* Mantém o mesmo fundo bege */
-        width: 100%;
-        height: calc(100vh - 70px);
-        flex-direction: column;
-        align-items: center;
-        padding-top: 2rem;
-        transition: 0.5s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        gap: 2rem;  /* Espaço entre itens no menu mobile */
-    }
-
-/* Menu para dispositivos móveis */
-.nav-menu.active {
-    display: block;
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    right: 0;
-    background-color: #444;
-    width: 100%;
-    text-align: center;
-}
-
-    .dropdown.active .dropdown-menu {
-        max-height: 500px;
-    }
-
-    .nav-menu a {
-        font-size: 1.1rem;
-        padding: 1rem 2rem;
-        width: 100%;
-        text-align: center;
-    }
-}
-
- /* Estilos do Dropdown */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-trigger {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.arrow {
-    font-size: 0.8rem;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #F5E6D3;
-    min-width: 200px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 4px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    z-index: 1000;
-    display: none; /* Adicionado para garantir que está escondido */
-}
-
-/* Mudança crucial: usar hover ao invés de .active */
-.dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    display: block;
-}
-
-/* Versão Mobile */
-@media screen and (max-width: 768px) {
-    .dropdown-menu {
-        position: static;
-        width: 100%;
-        display: none;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        box-shadow: none;
-    }
-
-    .dropdown.active .dropdown-menu {
-        display: block;
-    }
-}
-
-@keyframes navLinkFade {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+#container {
+    display: grid;
+    grid-template-areas: 
+    "header header header"
+    "aside article section"
+    "footer footer footer";
+    gap: 10px;
+    grid-auto-rows: 200px 100px;
 }
 
 header {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
+    grid-area: header;
+    background-color: blueviolet;
 }
 
-/* Estilo do carrossel */
-.carousel {
-    position: relative;
-    width: 100%;
-    max-height: 500px;
-    overflow: hidden;
+aside {
+    grid-area: aside;
+    background-color: aqua;
 }
 
-.carousel-inner {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
+article {
+    grid-area: article;
+    background-color: green;
 }
 
-.carousel-item {
-    min-width: 100%;
-    position: relative;
+section {
+    grid-area: section;
+    background-color: blue;
 }
 
-.carousel-item img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
+footer {
+    grid-area: footer;
+    background-color: brown;
 }
 
-.carousel-caption {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-}
-
-/* Controles */
-.carousel-control {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    font-size: 18px;
-    z-index: 10;
-}
-
-.carousel-control.prev {
-    left: 10px;
-}
-
-.carousel-control.next {
-    right: 10px;
-}
-
-
-/* Estilo para o título "Promoção" */
-.lancamento-title {
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
-    margin: 21px 0;
-}
-
-/* Estilo para o título "Promoção" */
-.promocao-title {
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
-    margin: 21px 0;
-}
-
-/* styles.css card*/
-.hover-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
-
-/* Estilos para o Footer */
-.footer {
-    background-color: #F5E6D3;
-    padding: 20px;
-    text-align: center;
-    font-size: 14px;
-    border-top: 1px solid #ddd;
-}
-
-/* Links no footer */
-.footer-links {
-    margin-bottom: 15px;
-}
-
-.footer-links a {
-    text-decoration: none;
-    color: #007bff;
-    margin: 0 15px;
-}
-
-.footer-links a:hover {
-    text-decoration: underline;
-}
-
-/* Contato e email */
-.footer-links p {
-    margin: 5px 0;
-    font-size: 14px;
-}
-
-/* Copyrigth */
-.footer-copy {
-    font-size: 12px;
-    color: grey;
-    margin-top: 15px;
-}
 
