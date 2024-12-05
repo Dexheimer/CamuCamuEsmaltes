@@ -1,0 +1,334 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNEm8FvoOA1BnBGgSR8qD3i",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Dexheimer/CamuCamuEsmaltes/blob/main/S%C3%B3%20est%C3%A1%20trazendo%20o%20m%C3%AAs%20de%20novembro.\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# 1. Configurações Iniciais\n",
+        "Criar um arquivo ou célula para as bibliotecas, configurações e funções auxiliares."
+      ],
+      "metadata": {
+        "id": "qanIwuepFm4V"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "j8cYEC-2Gpym",
+        "outputId": "02d0c76f-1efd-41ec-fb97-49519bdee5c4"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pdfplumber in /usr/local/lib/python3.10/dist-packages (0.11.4)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (2.32.3)\n",
+            "Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.10/dist-packages (4.12.3)\n",
+            "Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages (2.2.2)\n",
+            "Requirement already satisfied: pdfminer.six==20231228 in /usr/local/lib/python3.10/dist-packages (from pdfplumber) (20231228)\n",
+            "Requirement already satisfied: Pillow>=9.1 in /usr/local/lib/python3.10/dist-packages (from pdfplumber) (11.0.0)\n",
+            "Requirement already satisfied: pypdfium2>=4.18.0 in /usr/local/lib/python3.10/dist-packages (from pdfplumber) (4.30.0)\n",
+            "Requirement already satisfied: charset-normalizer>=2.0.0 in /usr/local/lib/python3.10/dist-packages (from pdfminer.six==20231228->pdfplumber) (3.4.0)\n",
+            "Requirement already satisfied: cryptography>=36.0.0 in /usr/local/lib/python3.10/dist-packages (from pdfminer.six==20231228->pdfplumber) (43.0.3)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.10/dist-packages (from requests) (3.10)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests) (2.2.3)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.10/dist-packages (from requests) (2024.8.30)\n",
+            "Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.10/dist-packages (from beautifulsoup4) (2.6)\n",
+            "Requirement already satisfied: numpy>=1.22.4 in /usr/local/lib/python3.10/dist-packages (from pandas) (1.26.4)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas) (2.8.2)\n",
+            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas) (2024.2)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas) (2024.2)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil>=2.8.2->pandas) (1.16.0)\n",
+            "Requirement already satisfied: cffi>=1.12 in /usr/local/lib/python3.10/dist-packages (from cryptography>=36.0.0->pdfminer.six==20231228->pdfplumber) (1.17.1)\n",
+            "Requirement already satisfied: pycparser in /usr/local/lib/python3.10/dist-packages (from cffi>=1.12->cryptography>=36.0.0->pdfminer.six==20231228->pdfplumber) (2.22)\n"
+          ]
+        }
+      ],
+      "source": [
+        "# Instalar as bibliotecas necessárias\n",
+        "!pip install pdfplumber requests beautifulsoup4 pandas\n",
+        "\n",
+        "# Importar as bibliotecas\n",
+        "import requests\n",
+        "import pandas as pd\n",
+        "import pdfplumber\n",
+        "import os\n",
+        "from bs4 import BeautifulSoup\n",
+        "from datetime import datetime\n",
+        "\n",
+        "# configurações iniciais\n",
+        "\n",
+        "base_url = \"https://www.rj.gov.br/ceasa/node/388\"\n",
+        "base_prefix = \"https://www.rj.gov.br\"\n",
+        "output_dir = \"ceasa_pdfs\"\n",
+        "csv_output = \"cotacoes_ceasa.csv\"\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# 2 Criar diretório"
+      ],
+      "metadata": {
+        "id": "ln_o23Xu3lUH"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Função para Criar Diretórios\n",
+        "\n",
+        "def create_directory(path):\n",
+        "    \"\"\"Cria um diretório se ele não existir.\"\"\"\n",
+        "    if not os.path.exists(path):\n",
+        "        os.makedirs(path)\n",
+        "        print(f\"Diretório criado: {path}\")\n",
+        "    else:\n",
+        "        print(f\"Diretório já existe: {path}\")"
+      ],
+      "metadata": {
+        "id": "zCUEPd3K3opn"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Testar a criação de diretório\n",
+        "\n",
+        "test_dir = \"teste_diretorio\"\n",
+        "create_directory(test_dir)\n",
+        "assert os.path.exists(test_dir), \"O diretório não foi criado corretamente.\"\n",
+        "print(\"Teste de criação de diretório concluído com sucesso!\")\n",
+        "os.rmdir(test_dir)  # Limpar após o teste"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TLXiyfw75L0G",
+        "outputId": "dd207c4a-1eb9-46c8-c98d-eea427a2b8e1"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Diretório criado: teste_diretorio\n",
+            "Teste de criação de diretório concluído com sucesso!\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# 3. Coletar Links dos Meses\n",
+        "E testar os links para os meses"
+      ],
+      "metadata": {
+        "id": "dll1vDEAF0w7"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def get_month_links(base_url, base_prefix):\n",
+        "    \"\"\"\n",
+        "    Acessa a página principal e retorna uma lista de dicionários com links e textos dos meses.\n",
+        "    URLs relativas são ajustadas para incluir o prefixo completo.\n",
+        "    \"\"\"\n",
+        "    response = requests.get(base_url)\n",
+        "    response.raise_for_status()\n",
+        "    soup = BeautifulSoup(response.content, 'html.parser')\n",
+        "\n",
+        "    # Focar na div específica onde os links estão localizados\n",
+        "    section = soup.find(\"div\", {\"property\": \"schema:text\"})\n",
+        "\n",
+        "    # Verificar se a seção foi encontrada\n",
+        "    if section:\n",
+        "        links = section.find_all(\"a\", href=True)\n",
+        "        month_links = []\n",
+        "\n",
+        "        for link in links:\n",
+        "            url = link['href']\n",
+        "            # Adicionar o prefixo base para URLs relativas\n",
+        "            if not url.startswith(\"http\"):\n",
+        "                url = f\"{base_prefix}{url}\"\n",
+        "            month_links.append({\"url\": url, \"text\": link.text.strip()})\n",
+        "\n",
+        "        return month_links\n",
+        "    else:\n",
+        "        print(\"Seção com links não encontrada.\")\n",
+        "        return []\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "keLXw32dMAgS"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Testar a coleta de links\n",
+        "month_links = get_month_links(base_url, base_prefix)\n",
+        "assert isinstance(month_links, list), \"Os links dos meses não foram coletados corretamente.\"\n",
+        "assert all(\"url\" in link and \"text\" in link for link in month_links), \"Estrutura dos links está incorreta.\"\n",
+        "assert all(link[\"url\"].startswith(\"http\") for link in month_links), \"Algumas URLs não foram corrigidas.\"\n",
+        "print(f\"Teste de coleta de links dos meses concluído! {(month_links)} links encontrados.\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qaOF5WD25bBA",
+        "outputId": "315c522c-a43b-4cbf-878a-a56b95367f70"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Teste de coleta de links dos meses concluído! [{'url': 'https://www.rj.gov.br/ceasa/node/495', 'text': 'Dezembro'}, {'url': 'https://www.rj.gov.br/ceasa/node/491', 'text': 'Novembro'}, {'url': 'https://www.rj.gov.br/ceasa/node/452', 'text': 'Outubro'}, {'url': 'https://www.rj.gov.br/ceasa/node/446', 'text': 'Setembro'}, {'url': 'https://www.rj.gov.br/ceasa/node/436', 'text': 'Agosto'}, {'url': 'https://www.rj.gov.br/ceasa/node/425', 'text': 'Julho'}, {'url': 'https://www.rj.gov.br/ceasa/node/403', 'text': 'Junho'}, {'url': 'https://www.rj.gov.br/ceasa/node/396', 'text': 'Maio'}, {'url': 'https://www.rj.gov.br/ceasa/node/395', 'text': 'Abril'}, {'url': 'https://www.rj.gov.br/ceasa/node/392', 'text': 'Março'}, {'url': 'https://www.rj.gov.br/ceasa/node/391', 'text': 'Fevereiro'}, {'url': 'https://www.rj.gov.br/ceasa/node/387', 'text': 'Janeiro'}] links encontrados.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# 4. Função para Extrair Links de PDFs"
+      ],
+      "metadata": {
+        "id": "fiECP--395rz"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def process_all_months(base_url, base_prefix):\n",
+        "    month_links = get_month_links(base_url, base_prefix)\n",
+        "    all_pdfs = []\n",
+        "\n",
+        "    for month in month_links:\n",
+        "        pdf_links = get_daily_pdf_links(month['url'], month['text'], base_prefix)\n",
+        "        print(f\"{len(pdf_links)} PDFs encontrados para {month['text']}.\")\n",
+        "        all_pdfs.extend(pdf_links)\n",
+        "\n",
+        "    print(f\"Total de PDFs encontrados: {len(all_pdfs)}.\")\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "ZtnEsHqa94Yz"
+      },
+      "execution_count": 29,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(all_pdfs)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 141
+        },
+        "id": "qMGzFFH7JMxu",
+        "outputId": "879f44f1-2fd3-447a-c4f3-15d0556855d7"
+      },
+      "execution_count": 30,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "NameError",
+          "evalue": "name 'all_pdfs' is not defined",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-30-0ea5dcaa6df0>\u001b[0m in \u001b[0;36m<cell line: 1>\u001b[0;34m()\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mall_pdfs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;31mNameError\u001b[0m: name 'all_pdfs' is not defined"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Testar a função de extração de links de PDFs\n",
+        "test_month_url = \"https://www.rj.gov.br/ceasa/node/452\"  # URL para Outubro\n",
+        "test_month_name = \"Outubro\"\n",
+        "\n",
+        "pdf_links = get_daily_pdf_links(test_month_url, test_month_name)\n",
+        "\n",
+        "# Validar os resultados\n",
+        "assert isinstance(pdf_links, list), \"A função não retornou uma lista.\"\n",
+        "assert all(\"url\" in link and \"month\" in link for link in pdf_links), \"Estrutura dos links está incorreta.\"\n",
+        "print(f\"Teste de extração de links de PDFs concluído! {len(pdf_links)} PDFs encontrados para {test_month_name}.\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "li7PdXR1-EtJ",
+        "outputId": "85a35a6f-945c-4d36-c215-331c6fb6e0f2"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Teste de extração de links de PDFs concluído! 22 PDFs encontrados para Outubro.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# 5. Iterar pelos Links de Todos os Meses e Processar os PDFs"
+      ],
+      "metadata": {
+        "id": "q1yd6my0JIde"
+      }
+    }
+  ]
+}
